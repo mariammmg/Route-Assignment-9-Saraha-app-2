@@ -38,3 +38,12 @@ export async function login (req,res,next) {
         next(error)
     }
 }
+export async function loginWithGoogle(req,res,next){
+    try{
+        const {idToken}=req.body
+        const user=await authService.loginWithGoogle(idToken)
+        res.status(201).json({message:"User Login Succefully ",sucess:true,data:user})
+    }catch(error){
+        next(error)
+    }
+}

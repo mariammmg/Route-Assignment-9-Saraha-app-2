@@ -5,6 +5,7 @@ import { toMs,toSeconds } from "../../common/utils/time.js";
 import bcrypt from "bcryptjs";
 import crypto from 'node:crypto'
 import jwt from "jsonwebtoken";
+import { verifyIdtoken } from "../../common/utils/google.auth.js";
 export async function register(userName,email,password){
     const user = await userRepo.findUserByemail(email)
     
@@ -71,4 +72,28 @@ export async function login(email,password){
     }
     const token = jwt.sign(payload,'8f3a9c2d7e1b4f6a0c5d8e9f2a1b7c4d',{expiresIn:toSeconds(1,'h')})
     return token
+}
+ 
+
+
+export async function loginWithGoogle(idToken){
+    //we verify idtoken that comes from FE login with google page
+    const payload = await verifyIdtoken(idToken)
+    // user exists return  token for this user
+    const user = await userRepo.findUserByemail(payload.email)
+    if(user){
+        const accessToken= jwt.sign({email:user.email,id:user._id},'8f3a9c2d7e1b4f6a0c5d8e9f2a1b7c4d',{expiresIn:toSeconds(1,'h')})
+        return accessToken
+    }
+    // if not exist create new user in database and generate token for the user
+    const newUser = await userRepo.CreatenewUser({
+        userName:payload.name,
+        email:payload.email,
+        providerPicPath:payload.picture,
+        provider:"google",
+        isVerified:true
+    })
+    const accessToken= jwt.sign({email:newUser.email,id:newUser._id},'8f3a9c2d7e1b4f6a0c5d8e9f2a1b7c4d',{expiresIn:toSeconds(1,'h')})
+    return accessToken
+    
 }

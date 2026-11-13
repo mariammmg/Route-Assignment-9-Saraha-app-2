@@ -16,3 +16,9 @@ export async function CreateUser(name, email,hashedpassword) {
 export async function UpdateUser(isVerified,_id){
    return await User.findOneAndUpdate({_id},isVerified,{returnDocument:"after"})
 }
+export async function CreatenewUser(data) {
+  
+  const newUser = new User(data);
+  const savedUser = await newUser.save();
+  return savedUser;
+}

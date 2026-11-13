@@ -2,11 +2,16 @@ import express from "express";
 import "./common/db/connection.js";
 import { authRouter } from "./app/auth/auth.route.js";
 import mongoose from "mongoose";
-
+import cors from "cors"
 
 const app = express();
 
 app.use(express.json());
+app.use(cors(
+   {
+      origin:["http://localhost:4200"]
+    }
+))
 app.use("/api/auth", authRouter);
 app.use((error,req,res,next)=>{
   res.json({message:error.message ,sucess:false})

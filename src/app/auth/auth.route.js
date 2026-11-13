@@ -6,3 +6,4 @@ authRouter.patch("/verify-account",authController.VerifyAccount)
 authRouter.post("/send-otp",authController.sendOtp)
 
 authRouter.post("/login",authController.login)
+authRouter.post("/login-with-google",authController.loginWithGoogle)
